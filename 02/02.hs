@@ -1,3 +1,10 @@
+#! /usr/bin/env -S"ANSWER=42" nix-shell
+#! nix-shell -p ghcid
+#! nix-shell -p "haskellPackages.ghcWithPackages (pkgs: [pkgs.lens])"
+#! nix-shell -i "ghcid -T main"
+
+import Control.Lens
+
 splitOn :: (a -> Bool) -> [a] -> [[a]]
 splitOn _ [] = []
 splitOn f l@(x:xs)
@@ -24,7 +31,6 @@ IntCode a b c d (x:xs)
     | otherwise = x:
 --}
   
-
 replaceNth :: Int -> a -> [a] -> [a]
 replaceNth _ _ [] = []
 replaceNth n newVal (x:xs)
