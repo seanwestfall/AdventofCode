@@ -3,44 +3,32 @@
 #! nix-shell -p "haskellPackages.ghcWithPackages (pkgs: [pkgs.lens])"
 #! nix-shell -i "ghcid -T main"
 
-import Control.Monad
-import Control.Monad.State
- 
--- Takes two lists, the list to be interated, and the second is the
--- in place temporary list that with take in edits.
-{--
-opCode :: [Int] -> [Int] -> [Int]
-opCode list temp = do
-    let index = 0
-    forM_ list $ \i -> do
-        print i
-        print index
-        index + 1
---}
+opCode :: [Int] -> Int -> [Int]
+opCode list c = case (list!!c) of
+                     1  -> opCode ( replaceNth (list!!(c+3)) ( (list!!(list!!(c+1))) + (list!!(list!!(c+2))) ) list ) (c + 4)
+                     2  -> opCode ( replaceNth (list!!(c+3)) ( (list!!(list!!(c+1))) * (list!!(list!!(c+2))) ) list ) (c + 4)
+                     99 -> list
 
+splitOn :: (a -> Bool) -> [a] -> [[a]]
+splitOn _ [] = []
+splitOn f l@(x:xs)
+    | f x = splitOn f xs
+    | otherwise = let (h,t) = break f l in h:(splitOn f t)
 
+replaceNth :: Int -> a -> [a] -> [a]
+replaceNth _ _ [] = []
+replaceNth n newVal (x:xs)
+    | n == 0 = newVal:xs
+    | otherwise = x:replaceNth (n-1) newVal xs
 
 main :: IO ()
 main = do
-    -- content <- readFile "02/02.txt"
-    (on, score) <- get
-    let list = [1,9,10,3,2,3,11,0,99,30,40,50]
-        index = 0
-    forM_ list $ \i -> do
-        putStrLn $ show i
-        put (on, score + 1)
-        putStrLn $ show index
-    putStrLn "finished"
+    content <- readFile "02_2.txt"
+    let opCodes   = splitOn (== ',') content
+        newCodes  = map (read::String->Int) opCodes
+        list      = replaceNth 1 12 newCodes
+        list2     = replaceNth 2 2 list 
+        finallist = opCode list2 0
+    putStrLn $ show finallist
+    putStrLn $ "The value at position 0 is " ++ show (finallist!!0)
 
-
-main = do
-    let list = [1,9,10,3,2,3,11,0,99,30,40,50]
-    let loop list = do
-        i < get
-        put (i + 1)
-        forM_ list $ \n -> do
-            putStrLn $ show n
-            put (i + 1)
-            putStrLn $ show i
-     in \s -> evalStateT (loop list) 0
-            
