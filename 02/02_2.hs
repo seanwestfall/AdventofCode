@@ -1,3 +1,8 @@
+#! /usr/bin/env -S"ANSWER=42" nix-shell
+#! nix-shell -p ghcid
+#! nix-shell -p "haskellPackages.ghcWithPackages (pkgs: [pkgs.lens])"
+#! nix-shell -i "ghcid -T main"
+
 import Control.Monad
 import Control.Monad.State
  
