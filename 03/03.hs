@@ -1,4 +1,5 @@
 
-main : IO ()
+main :: IO ()
 main = do
-    putStrLn $ "Hello World"
+    content <- readFile "03.txt"
+    putStrLn $ content
